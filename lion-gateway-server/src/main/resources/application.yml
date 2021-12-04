@@ -1,0 +1,10 @@
+lion:
+  plugins:
+    waf:
+      enabled: true
+      extend: {}
+      rules:
+        - name: headerRule
+          matchMode: and
+          conditions:
+            - header,aaa|=|bbb

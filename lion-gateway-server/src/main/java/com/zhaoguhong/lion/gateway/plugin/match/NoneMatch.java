@@ -1,4 +1,4 @@
-package com.zhaoguhong.lion.gateway.core.match;
+package com.zhaoguhong.lion.gateway.plugin.match;
 
 import com.zhaoguhong.lion.gateway.common.enums.MatchModeEnum;
 import com.zhaoguhong.lion.gateway.config.ConditionConfig;

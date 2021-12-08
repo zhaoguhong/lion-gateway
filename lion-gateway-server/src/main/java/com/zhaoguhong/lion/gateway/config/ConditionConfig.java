@@ -1,6 +1,9 @@
 package com.zhaoguhong.lion.gateway.config;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -10,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
  * @date 2021/11/22
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Slf4j
 public class ConditionConfig {
 

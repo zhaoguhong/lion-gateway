@@ -2,7 +2,10 @@ package com.zhaoguhong.lion.gateway.config;
 
 import java.util.List;
 import java.util.Map;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 插件配置
@@ -11,6 +14,9 @@ import lombok.Data;
  * @date 2021/11/22
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PluginConfig {
 
   /**

@@ -2,8 +2,8 @@ package com.zhaoguhong.lion.gateway.plugin;
 
 import com.zhaoguhong.lion.gateway.common.enums.PluginEnum;
 import com.zhaoguhong.lion.gateway.core.RequestContext;
-import com.zhaoguhong.lion.gateway.core.handler.AbstractPluginHandler;
-import com.zhaoguhong.lion.gateway.core.handler.HandlerChain;
+import com.zhaoguhong.lion.gateway.plugin.handler.AbstractPluginHandler;
+import com.zhaoguhong.lion.gateway.plugin.handler.HandlerChain;
 import org.springframework.stereotype.Component;
 
 /**

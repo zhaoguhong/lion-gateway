@@ -1,11 +1,11 @@
-package com.zhaoguhong.lion.gateway.core.match;
+package com.zhaoguhong.lion.gateway.plugin.match;
 
 import com.zhaoguhong.lion.gateway.config.ConditionConfig;
 import com.zhaoguhong.lion.gateway.core.RequestContext;
-import com.zhaoguhong.lion.gateway.core.loader.RequestDataLoader;
-import com.zhaoguhong.lion.gateway.core.loader.RequestDataLoaderFactory;
-import com.zhaoguhong.lion.gateway.core.predicate.Predicate;
-import com.zhaoguhong.lion.gateway.core.predicate.PredicateFactory;
+import com.zhaoguhong.lion.gateway.plugin.loader.RequestDataLoader;
+import com.zhaoguhong.lion.gateway.plugin.loader.RequestDataLoaderFactory;
+import com.zhaoguhong.lion.gateway.plugin.predicate.Predicate;
+import com.zhaoguhong.lion.gateway.plugin.predicate.PredicateFactory;
 
 /**
  * 匹配模式的基类

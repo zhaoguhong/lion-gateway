@@ -3,7 +3,7 @@ package com.zhaoguhong.lion.gateway.netty.handler;
 import com.google.common.collect.Maps;
 import com.zhaoguhong.lion.gateway.core.LionContext;
 import com.zhaoguhong.lion.gateway.core.RequestContext;
-import com.zhaoguhong.lion.gateway.core.handler.HandlerChain;
+import com.zhaoguhong.lion.gateway.plugin.handler.HandlerChain;
 import com.zhaoguhong.lion.gateway.netty.util.NettyUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

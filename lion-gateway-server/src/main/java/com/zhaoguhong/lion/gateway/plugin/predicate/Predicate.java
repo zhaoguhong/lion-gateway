@@ -1,4 +1,4 @@
-package com.zhaoguhong.lion.gateway.core.predicate;
+package com.zhaoguhong.lion.gateway.plugin.predicate;
 
 /**
  * 数据断言接口

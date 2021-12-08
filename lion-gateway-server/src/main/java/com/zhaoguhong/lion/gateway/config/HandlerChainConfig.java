@@ -1,7 +1,7 @@
 package com.zhaoguhong.lion.gateway.config;
 
-import com.zhaoguhong.lion.gateway.core.handler.DefaultHandlerChain;
-import com.zhaoguhong.lion.gateway.core.handler.PluginHandler;
+import com.zhaoguhong.lion.gateway.plugin.handler.DefaultHandlerChain;
+import com.zhaoguhong.lion.gateway.plugin.handler.PluginHandler;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.zhaoguhong.lion.gateway.core.handler;
+package com.zhaoguhong.lion.gateway.plugin.handler;
 
 import com.zhaoguhong.lion.gateway.core.RequestContext;
 import java.util.List;

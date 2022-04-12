@@ -8,3 +8,11 @@ lion:
           matchMode: and
           conditions:
             - header,aaa|=|bbb
+    http:
+      enabled: true
+      extend: { }
+      rules:
+        - name: uriRule
+          matchMode: and
+          conditions:
+            - header,aaa|!=|bbb

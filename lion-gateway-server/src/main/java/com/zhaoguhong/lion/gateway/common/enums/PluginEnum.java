@@ -14,9 +14,14 @@ import java.util.stream.Collectors;
 public enum PluginEnum {
 
   /**
-   * waf 插件
+   * waf plugin
    */
-  WAF("waf");
+  WAF("waf"),
+
+  /**
+   * http plugin
+   */
+  HTTP("http");
 
   PluginEnum(String name) {
     this.name = name;

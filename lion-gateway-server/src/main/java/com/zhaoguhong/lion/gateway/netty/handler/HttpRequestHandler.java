@@ -35,6 +35,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
     DiskFileUpload.deleteOnExitTemporaryFile = false;
     DiskAttribute.deleteOnExitTemporaryFile = false;
   }
+
   private HandlerChain handlerChain = LionContext.getBean(HandlerChain.class);
 
   @Override
@@ -58,13 +59,16 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
     } else {
       response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1,
           HttpResponseStatus.INTERNAL_SERVER_ERROR);
+      ChannelFuture f = channelHandlerContext.channel().writeAndFlush(response);
+      return;
     }
 
     RequestContext requestContext = RequestContext.builder().httpHeaders(request.headers()).build();
     handlerChain.handler(requestContext);
 
-
-    // 响应数据
+    responseBuf = Unpooled.copiedBuffer(requestContext.getResponse().toString(), CharsetUtil.UTF_8);
+    response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK,
+        responseBuf);
     ChannelFuture f = channelHandlerContext.channel().writeAndFlush(response);
   }
 

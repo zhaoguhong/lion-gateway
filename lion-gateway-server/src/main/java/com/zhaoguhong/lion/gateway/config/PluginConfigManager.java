@@ -6,6 +6,7 @@ import com.zhaoguhong.lion.gateway.common.enums.PluginEnum;
 import com.zhaoguhong.lion.gateway.common.enums.PredicateEnum;
 import com.zhaoguhong.lion.gateway.common.enums.RequestDataEnum;
 import java.util.Map;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class PluginConfigManager {
   }
 
   /**
-   * 校验插件配置
+   * check plugin config
    *
    * @param pluginConfig
    * @return
@@ -59,36 +60,58 @@ public class PluginConfigManager {
           PluginEnum.names());
       return false;
     }
-
     if (pluginConfig.getRules() != null) {
-      for (RuleConfig rule : pluginConfig.getRules()) {
-        if (!MatchModeEnum.validMode(rule.getMatchMode())) {
-          log.error("rule name[{}], matchMode[{}] is invalid, only support:{}", rule.getName(),
-              rule.getMatchMode(),
-              MatchModeEnum.modes());
-          return false;
-        }
-        for (ConditionConfig condition : rule.getConditions()) {
-          if (!StringUtils.isBlank(condition.getTargetData())) {
-            log.error("rule name[{}], targetData is required", rule.getName());
-            return false;
-          }
-          if (!RequestDataEnum.validType(condition.getRequestDataType())) {
-            log.error("rule name[{}], requestDataType[{}] is invalid, only support:{}",
-                rule.getName(),
-                condition.getRequestDataType(),
-                RequestDataEnum.types());
-            return false;
-          }
-          if (!PredicateEnum.validOperator(condition.getOperator())) {
-            log.error("rule name[{}], operator[{}] is invalid, only support:{}",
-                rule.getName(),
-                condition.getOperator(),
-                PredicateEnum.operators());
-            return false;
-          }
-        }
-      }
+      return pluginConfig.getRules().stream().allMatch(rule -> checkRuleConfig(rule));
+    }
+    return true;
+  }
+
+  /**
+   * check rule config
+   *
+   * @param rule
+   * @return
+   */
+  public static boolean checkRuleConfig(RuleConfig rule) {
+    if (!MatchModeEnum.validMode(rule.getMatchMode())) {
+      log.error("rule name[{}], matchMode[{}] is invalid, only support:{}", rule.getName(),
+          rule.getMatchMode(),
+          MatchModeEnum.modes());
+      return false;
+    }
+    if (rule.getConditions() != null) {
+      // set reverse reference
+      rule.getConditions().forEach(condition -> condition.setRule(rule));
+      return rule.getConditions().stream().allMatch(condition -> checkConditionConfig(condition));
+    }
+    return true;
+  }
+
+  /**
+   * check condition config
+   *
+   * @param condition
+   * @return
+   */
+  public static boolean checkConditionConfig(ConditionConfig condition) {
+    RuleConfig rule = condition.getRule();
+    if (StringUtils.isBlank(condition.getTargetData())) {
+      log.error("rule name[{}], targetData is required", rule.getName());
+      return false;
+    }
+    if (!RequestDataEnum.validType(condition.getRequestDataType())) {
+      log.error("rule name[{}], requestDataType[{}] is invalid, only support:{}",
+          rule.getName(),
+          condition.getRequestDataType(),
+          RequestDataEnum.types());
+      return false;
+    }
+    if (!PredicateEnum.validOperator(condition.getOperator())) {
+      log.error("rule name[{}], operator[{}] is invalid, only support:{}",
+          rule.getName(),
+          condition.getOperator(),
+          PredicateEnum.operators());
+      return false;
     }
     return true;
   }

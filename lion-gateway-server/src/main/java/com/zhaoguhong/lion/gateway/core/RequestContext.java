@@ -27,4 +27,6 @@ public class RequestContext {
 
   private String uri;
 
+  private Object response;
+
 }

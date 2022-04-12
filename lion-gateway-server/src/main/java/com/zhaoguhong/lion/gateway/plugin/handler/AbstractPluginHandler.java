@@ -23,7 +23,7 @@ public abstract class AbstractPluginHandler implements PluginHandler {
     PluginConfig pluginConfig = PluginConfigManager.getPlugin(name());
 
     // 如果当前插件开启，并且配置了规则
-    if (pluginConfig != null || pluginConfig.isEnabled() || CollectionUtils
+    if (pluginConfig != null && pluginConfig.isEnabled() && CollectionUtils
         .isNotEmpty(pluginConfig.getRules())) {
 
       for (RuleConfig ruleConfig : pluginConfig.getRules()) {

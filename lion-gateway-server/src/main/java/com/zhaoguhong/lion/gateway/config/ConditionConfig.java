@@ -1,9 +1,11 @@
 package com.zhaoguhong.lion.gateway.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -17,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @Builder
 @Slf4j
+@ToString(exclude = {"rule"})
 public class ConditionConfig {
 
   /**
@@ -38,6 +41,12 @@ public class ConditionConfig {
    * 需要比对的目标数据
    */
   private String targetData;
+
+  /**
+   * rule config, reverse reference
+   */
+  @JsonIgnore
+  private RuleConfig rule;
 
   /**
    * 构造方法，解析配置的数据，配置用竖线分隔，比如 header,aaa|=|bbb

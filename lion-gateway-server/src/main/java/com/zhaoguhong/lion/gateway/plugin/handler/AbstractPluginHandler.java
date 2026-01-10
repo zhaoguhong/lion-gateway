@@ -8,7 +8,7 @@ import com.zhaoguhong.lion.gateway.core.RequestContext;
 import com.zhaoguhong.lion.gateway.plugin.match.MatchMode;
 import com.zhaoguhong.lion.gateway.plugin.match.MatchModeFactory;
 import java.util.List;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 /**
  * 插件处理器基类

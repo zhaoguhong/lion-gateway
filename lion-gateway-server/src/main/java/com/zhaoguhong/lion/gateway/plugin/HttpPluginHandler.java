@@ -5,7 +5,11 @@ import com.zhaoguhong.lion.gateway.core.RequestContext;
 import com.zhaoguhong.lion.gateway.plugin.handler.AbstractPluginHandler;
 import com.zhaoguhong.lion.gateway.plugin.handler.HandlerChain;
 import org.springframework.stereotype.Component;
-import reactor.netty.http.client.HttpClient;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 /**
  * @author zhaoguhong
@@ -14,15 +18,28 @@ import reactor.netty.http.client.HttpClient;
 @Component
 public class HttpPluginHandler extends AbstractPluginHandler {
 
+  // 使用虚拟线程的 HttpClient
+  private static final HttpClient httpClient = HttpClient.newBuilder()
+      .executor(Thread.ofVirtual().factory()) // 🔥 虚拟线程！
+      .build();
+
   @Override
   protected void doHandler(RequestContext requestContext, HandlerChain handlerChain) {
-    HttpClient client = HttpClient.create();
+    try {
+      HttpRequest request = HttpRequest.newBuilder()
+          .uri(URI.create("https://www.baidu.com/sugrec"))
+          .GET()
+          .build();
 
-    String response = client.get()
-        .uri("https://www.baidu.com/sugrec")
-        .responseContent().aggregate()
-        .asString().block();
-    requestContext.setResponse(response);
+      // 在虚拟线程中，这样的阻塞调用不会有性能问题
+      String response = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
+          .body();
+      
+      requestContext.setResponse(response);
+    } catch (Exception e) {
+      // TODO: 使用日志框架替代 printStackTrace
+      throw new RuntimeException("HTTP request failed", e);
+    }
   }
 
   @Override

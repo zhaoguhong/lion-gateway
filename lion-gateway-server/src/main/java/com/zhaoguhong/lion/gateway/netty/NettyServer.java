@@ -6,12 +6,16 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.concurrent.DefaultThreadFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author zhaoguhong
  * @date 2021/11/19
  */
 public class NettyServer {
+
+  private static final Logger log = LoggerFactory.getLogger(NettyServer.class);
 
   public void start() {
     int availableProcessors = Runtime.getRuntime().availableProcessors();
@@ -27,9 +31,11 @@ public class NettyServer {
 
     try {
       Channel channel = bootstrap.bind(9999).sync().channel();
+      log.info("Lion Gateway started on port 9999 with JDK 21 Virtual Threads support");
       channel.closeFuture().sync();
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      Thread.currentThread().interrupt();
+      log.error("Netty server interrupted", e);
     } finally {
       workerGroup.shutdownGracefully();
       bossGroup.shutdownGracefully();

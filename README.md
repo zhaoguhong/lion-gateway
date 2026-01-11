@@ -70,9 +70,11 @@ java -jar lion-gateway-server/target/lion-gateway-server-1.0-SNAPSHOT.jar
 ### 方式 1：直接使用
 
 ```java
+import java.util.concurrent.Executors;
+
 // 虚拟线程的 HttpClient
 HttpClient httpClient = HttpClient.newBuilder()
-    .executor(Thread.ofVirtual().factory())
+    .executor(Executors.newVirtualThreadPerTaskExecutor())
     .build();
 
 // 同步调用，不会阻塞

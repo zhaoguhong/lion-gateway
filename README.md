@@ -1,142 +1,111 @@
 # lion-gateway
 
-## 背景
-API 网关做为微服务架构的守护门神，重要性不言而喻。
+一个基于 **Netty + JDK 21 虚拟线程** 的高性能 API 网关，目标是：
 
-项目取名 lion，就像中国很多住宅门前的守护神石狮子一样，守护我们的服务。
+- **性能足够高**：充分利用 Netty I/O 模型与虚拟线程并发能力
+- **代码足够直观**：使用同步风格编程，降低维护与调试成本
+- **扩展足够轻量**：通过插件链 + 规则引擎扩展网关能力
 
-相比其他开源网关：
-- apisix, kong 基于 nginx，性能出众，但 c/lua 开发门槛高
-- SpringCloud Gateway, Zuul2, Shenyu 存在设计缺陷（循环匹配、重复解析等）
+## 为什么做这个项目
 
-本项目基于 Netty + JDK 21 虚拟线程，追求极致性能的同时保持代码简洁。
+在微服务架构中，网关是流量入口与第一道防线。
+
+- APISIX / Kong（Nginx + Lua）性能非常强，但对 Java 团队来说二次开发门槛偏高
+- 某些 Java 网关框架在匹配链路或请求处理上存在复杂度较高的问题
+
+`lion-gateway` 希望在 Java 技术栈内提供一个“**更好懂、更好改、性能不妥协**”的实现。
 
 ## 技术栈
 
-- **JDK 21** - 虚拟线程实现百万级并发
-- **Spring Boot 3.2** - 企业级框架
-- **Netty 4.1** - 高性能网络框架
+- **JDK 21**（虚拟线程）
+- **Spring Boot 3.x**
+- **Netty 4.1.x**
+- **Maven**（构建）
 
-## 核心特性
+## 核心设计
 
-### ⚡ 虚拟线程
-使用 JDK 21 虚拟线程，无需复杂的响应式编程：
-- 百万级并发能力
-- 简单的同步代码
-- 更好的调试体验
-- 零响应式依赖
+### 1) 虚拟线程执行模型
 
-### 🎯 规则引擎
-对于等值条件优先采用哈希匹配，匹配不到退回循环匹配。
+项目使用 JDK 21 虚拟线程执行阻塞型逻辑（如 HTTP 转发调用），做到：
+
+- 保留同步代码可读性
+- 避免复杂的响应式链式调用
+- 在高并发 I/O 场景下获得优秀吞吐
+
+### 2) 插件责任链（Plugin Chain）
+
+请求进入后通过插件链按顺序处理，当前包含：
+
+- `waf`：规则匹配与拦截
+- `http`：目标请求转发
+
+你可以按同样模式扩展更多插件（鉴权、限流、灰度等）。
+
+### 3) 规则引擎
+
+规则由 `matchMode + conditions` 组成：
+
+- 等值匹配优先走高效匹配路径
+- 未命中时退化为循环匹配
+
+在兼顾灵活性的同时，尽量降低常见场景下的匹配开销。
+
+## 项目结构
+
+```text
+lion-gateway/
+├── lion-gateway-server/                 # 网关服务主模块
+│   ├── src/main/java/.../config         # 配置模型与装配
+│   ├── src/main/java/.../netty          # Netty 服务端与 Handler
+│   ├── src/main/java/.../plugin         # 插件、匹配器、数据加载器
+│   └── src/main/resources/application.yml
+├── pom.xml
+└── README.md
+```
 
 ## 环境要求
 
-- JDK 21+
-- Maven 3.6+
+- **JDK 21+**
+- **Maven 3.6+**
 
 ## 快速开始
 
-### 安装 JDK 21
+### 1. 获取代码
 
 ```bash
-# macOS
-brew install openjdk@21
-
-# 或使用 SDKMAN
-sdk install java 21.0.1-open
-```
-
-### 编译运行
-
-```bash
-# 克隆项目
 git clone <repository-url>
 cd lion-gateway
+```
 
-# 编译
-mvn clean compile
+### 2. 编译与测试
 
-# 打包
+```bash
+mvn clean test
+```
+
+### 3. 打包
+
+```bash
 mvn package
+```
 
-# 运行
+### 4. 启动
+
+```bash
 java -jar lion-gateway-server/target/lion-gateway-server-1.0-SNAPSHOT.jar
 ```
 
-服务启动后监听 9999 端口。
+默认监听端口：`9999`。
 
-## 虚拟线程使用
+## 配置示例
 
-### 方式 1：直接使用
-
-```java
-import java.util.concurrent.Executors;
-
-// 虚拟线程的 HttpClient
-HttpClient httpClient = HttpClient.newBuilder()
-    .executor(Executors.newVirtualThreadPerTaskExecutor())
-    .build();
-
-// 同步调用，不会阻塞
-String response = httpClient.send(request, 
-    HttpResponse.BodyHandlers.ofString()).body();
-```
-
-### 方式 2：@Async 注解
-
-```java
-@Service
-public class YourService {
-    @Async  // 自动在虚拟线程中执行
-    public void asyncMethod() {
-        // 阻塞操作完全 OK
-    }
-}
-```
-
-### 方式 3：注入执行器
-
-```java
-@Component
-public class YourHandler {
-    @Resource(name = "virtualThreadExecutor")
-    private ExecutorService executor;
-    
-    public void process() {
-        executor.submit(() -> {
-            // 在虚拟线程中运行
-        });
-    }
-}
-```
-
-## 升级说明
-
-项目已从 JDK 8 + Reactor 升级到 JDK 21 + 虚拟线程：
-
-### 主要改动
-- 移除 Reactor 依赖（reactor-netty, reactor-core）
-- 改用 Java 原生 HttpClient + 虚拟线程
-- Spring Boot 2.3.6 → 3.2.1
-- 所有依赖升级到最新版本
-
-### 收益
-| 对比项 | Reactor | 虚拟线程 |
-|--------|---------|----------|
-| 并发能力 | 百万级 | 百万级+ |
-| 代码复杂度 | 高 | 低 |
-| 调试体验 | 困难 | 简单 |
-| 学习成本 | 高 | 低 |
-
-## 配置
-
-### application.yml
+`lion-gateway-server/src/main/resources/application.yml`
 
 ```yaml
 spring:
   threads:
     virtual:
-      enabled: true  # 启用虚拟线程
+      enabled: true
 
 lion:
   plugins:
@@ -156,31 +125,50 @@ lion:
             - header,aaa|!=|bbb
 ```
 
-## 注意事项
+> `conditions` 当前格式为：`数据来源,字段|谓词|值`。
 
-### 虚拟线程最佳实践
+## 虚拟线程实践建议
 
-✅ **推荐**
-- 直接编写同步阻塞代码
-- 使用 ReentrantLock
-- 大量并发 I/O 操作
+### 推荐
 
-❌ **避免**
-- `synchronized`（会固定到平台线程，改用 `ReentrantLock`）
-- 池化虚拟线程（没必要）
-- CPU 密集型任务长时间占用
+- 使用同步代码组织 I/O 流程
+- 在高并发请求下使用虚拟线程承载阻塞调用
+- 显式关注超时、熔断、重试等稳定性策略
 
-### 依赖说明
+### 不推荐
 
-如果代码中使用了 commons-collections，需要更新包名：
-```java
-// 旧的
-import org.apache.commons.collections.xxx;
+- 大量使用 `synchronized`（可优先考虑 `ReentrantLock`）
+- 对虚拟线程做线程池化（通常没有必要）
+- 在虚拟线程中长时间执行 CPU 密集任务
 
-// 新的
-import org.apache.commons.collections4.xxx;
-```
+## 升级背景（JDK 8/Reactor -> JDK 21/Virtual Threads）
+
+项目从旧执行模型迁移后，核心收益是：
+
+- 降低编码复杂度
+- 提升故障定位与调试体验
+- 保持高并发处理能力
+
+| 维度 | 传统响应式写法 | 虚拟线程同步写法 |
+|---|---|---|
+| 代码复杂度 | 高 | 低 |
+| 调试体验 | 较复杂 | 直观 |
+| 学习成本 | 较高 | 低 |
+
+## 常见问题（FAQ）
+
+### Q1：这个项目适合什么场景？
+
+适合 Java 技术栈内，希望构建轻量可控网关、且有高并发 I/O 诉求的团队。
+
+### Q2：是否必须使用响应式编程？
+
+不需要。该项目核心思路是“Netty I/O + 虚拟线程业务处理”，以同步代码风格为主。
+
+### Q3：如何扩展新插件？
+
+按现有 `plugin/handler` 结构新增插件处理器，实现并注册到处理链即可。
 
 ## License
 
-详见 LICENSE 文件。
+本项目遵循 [MIT License](./LICENSE)。

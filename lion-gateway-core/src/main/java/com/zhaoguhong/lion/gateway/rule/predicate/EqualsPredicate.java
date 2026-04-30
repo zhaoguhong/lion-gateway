@@ -5,7 +5,7 @@ import java.util.Objects;
 import org.springframework.stereotype.Component;
 
 /**
- * 相等断言
+ * Equals predicate - check if request data equals target data
  *
  * @author zhaoguhong
  * @date 2021/11/19

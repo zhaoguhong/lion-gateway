@@ -1,26 +1,28 @@
 package com.zhaoguhong.lion.gateway.rule.predicate;
 
 import com.zhaoguhong.lion.gateway.common.enums.PredicateEnum;
-import java.util.Objects;
 import org.springframework.stereotype.Component;
 
 /**
- * Not equals predicate - check if request data does not equal target data
+ * Ends with predicate - check if request data ends with target string
  *
  * @author zhaoguhong
- * @date 2021/11/19
+ * @date 2026/05/01
  */
 @Component
-public class NotEqualsPredicate implements Predicate {
+public class EndsWithPredicate implements Predicate {
 
   @Override
   public boolean test(String requestData, String targetData) {
-    return !Objects.equals(requestData, targetData);
+    if (requestData == null || targetData == null) {
+      return false;
+    }
+    return requestData.endsWith(targetData);
   }
 
   @Override
   public String operator() {
-    return PredicateEnum.NOT_EQUALS.getOperator();
+    return PredicateEnum.ENDS_WITH.getOperator();
   }
 
 }

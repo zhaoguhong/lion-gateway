@@ -1,26 +1,25 @@
 package com.zhaoguhong.lion.gateway.rule.predicate;
 
 import com.zhaoguhong.lion.gateway.common.enums.PredicateEnum;
-import java.util.Objects;
 import org.springframework.stereotype.Component;
 
 /**
- * Not equals predicate - check if request data does not equal target data
+ * Empty predicate - check if request data is null or empty string
  *
  * @author zhaoguhong
- * @date 2021/11/19
+ * @date 2026/05/01
  */
 @Component
-public class NotEqualsPredicate implements Predicate {
+public class EmptyPredicate implements Predicate {
 
   @Override
   public boolean test(String requestData, String targetData) {
-    return !Objects.equals(requestData, targetData);
+    return requestData == null || requestData.isEmpty();
   }
 
   @Override
   public String operator() {
-    return PredicateEnum.NOT_EQUALS.getOperator();
+    return PredicateEnum.EMPTY.getOperator();
   }
 
 }

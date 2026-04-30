@@ -1,7 +1,7 @@
 package com.zhaoguhong.lion.gateway.rule.predicate;
 
 /**
- * 数据断言接口
+ * Data predicate interface
  *
  * @author zhaoguhong
  * @date 2021/11/19
@@ -9,18 +9,18 @@ package com.zhaoguhong.lion.gateway.rule.predicate;
 public interface Predicate {
 
   /**
-   * 数据断言
+   * Data predicate test
    *
-   * @param requestData 请求数据
-   * @param targetData  需要比较的数据
-   * @return
+   * @param requestData request data
+   * @param targetData  target data to compare with
+   * @return true if the test passes
    */
   boolean test(String requestData, String targetData);
 
   /**
-   * 操作符
+   * Get the operator string
    *
-   * @return
+   * @return operator
    */
   String operator();
 

@@ -5,8 +5,8 @@ import com.zhaoguhong.lion.gateway.config.PluginConfig;
 import com.zhaoguhong.lion.gateway.config.PluginConfigManager;
 import com.zhaoguhong.lion.gateway.config.RuleConfig;
 import com.zhaoguhong.lion.gateway.core.RequestContext;
-import com.zhaoguhong.lion.gateway.plugin.match.MatchMode;
-import com.zhaoguhong.lion.gateway.plugin.match.MatchModeFactory;
+import com.zhaoguhong.lion.gateway.rule.match.MatchMode;
+import com.zhaoguhong.lion.gateway.rule.match.MatchModeFactory;
 import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 

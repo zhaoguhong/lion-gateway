@@ -1,4 +1,4 @@
-package com.zhaoguhong.lion.gateway.plugin.match;
+package com.zhaoguhong.lion.gateway.rule.match;
 
 import com.zhaoguhong.lion.gateway.common.enums.MatchModeEnum;
 import com.zhaoguhong.lion.gateway.config.ConditionConfig;
@@ -7,22 +7,22 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 /**
- * 全部满足
+ * 没有一个满足条件
  *
  * @author zhaoguhong
  * @date 2021/11/19
  */
 @Component
-public class AllMatch extends AbstractMatchMode {
+public class NoneMatch extends AbstractMatchMode {
 
   @Override
   public boolean match(RequestContext requestContext, List<ConditionConfig> conditionConfigs) {
     return conditionConfigs.stream()
-        .allMatch(conditionConfig -> this.singleMatch(requestContext, conditionConfig));
+        .noneMatch(conditionConfig -> this.singleMatch(requestContext, conditionConfig));
   }
 
   @Override
   public String mode() {
-    return MatchModeEnum.AND.getMode();
+    return MatchModeEnum.NONE.getMode();
   }
 }

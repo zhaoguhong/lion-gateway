@@ -1,4 +1,4 @@
-package com.zhaoguhong.lion.gateway.plugin.loader;
+package com.zhaoguhong.lion.gateway.rule.loader;
 
 
 import static org.mockito.Mockito.*;

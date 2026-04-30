@@ -1,4 +1,4 @@
-package com.zhaoguhong.lion.gateway.plugin.loader;
+package com.zhaoguhong.lion.gateway.rule.loader;
 
 import com.google.common.collect.Maps;
 import java.util.List;

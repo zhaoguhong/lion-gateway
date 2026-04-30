@@ -1,4 +1,4 @@
-package com.zhaoguhong.lion.gateway.plugin.predicate;
+package com.zhaoguhong.lion.gateway.rule.predicate;
 
 import com.google.common.collect.Maps;
 import java.util.List;

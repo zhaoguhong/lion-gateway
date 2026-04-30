@@ -1,4 +1,4 @@
-package com.zhaoguhong.lion.gateway.plugin.match;
+package com.zhaoguhong.lion.gateway.rule.match;
 
 import com.zhaoguhong.lion.gateway.config.ConditionConfig;
 import com.zhaoguhong.lion.gateway.core.RequestContext;

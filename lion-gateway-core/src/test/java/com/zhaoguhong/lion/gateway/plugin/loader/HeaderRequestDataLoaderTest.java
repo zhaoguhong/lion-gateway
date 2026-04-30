@@ -7,9 +7,9 @@ import com.zhaoguhong.lion.gateway.config.ConditionConfig;
 import com.zhaoguhong.lion.gateway.core.RequestContext;
 import io.netty.handler.codec.http.HttpHeaders;
 import java.util.UUID;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class HeaderRequestDataLoaderTest {
 
@@ -23,8 +23,8 @@ public class HeaderRequestDataLoaderTest {
 
   private String headerValue = UUID.randomUUID().toString();
 
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     loader = new HeaderRequestDataLoader();
     requestContext = new RequestContext();
     HttpHeaders httpHeaders = mock(HttpHeaders.class);
@@ -34,8 +34,8 @@ public class HeaderRequestDataLoaderTest {
   }
 
   @Test
-  public void load() {
-    Assert.assertEquals(loader.load(requestContext, conditionConfig), headerValue);
+  void load() {
+    Assertions.assertEquals(loader.load(requestContext, conditionConfig), headerValue);
   }
 
 }

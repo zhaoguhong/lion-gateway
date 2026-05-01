@@ -5,7 +5,7 @@ import com.zhaoguhong.lion.gateway.core.RequestContext;
 import java.util.List;
 
 /**
- * 匹配模式
+ * Match mode
  *
  * @author zhaoguhong
  * @date 2021/11/19
@@ -13,18 +13,18 @@ import java.util.List;
 public interface MatchMode {
 
   /**
-   * 根据匹配模式判断条件是否符合规则
+   * Check if conditions match rules based on match mode
    *
-   * @param requestContext   请求上下文
-   * @param conditionConfigs 条件配置列表
-   * @return
+   * @param requestContext   request context
+   * @param conditionConfigs condition configuration list
+   * @return true if match
    */
   boolean match(RequestContext requestContext, List<ConditionConfig> conditionConfigs);
 
   /**
-   * 匹配模式
+   * Match mode name
    *
-   * @return
+   * @return mode name
    */
   String mode();
 

@@ -84,7 +84,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
   }
 
   /*
-   * 获取url参数
+   * Get URL parameters
    */
   private Map<String, Object> getUriParams(FullHttpRequest request) {
     Map<String, Object> params = Maps.newHashMap();

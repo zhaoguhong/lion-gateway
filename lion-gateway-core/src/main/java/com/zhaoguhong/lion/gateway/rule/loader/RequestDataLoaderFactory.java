@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * 请求数据加载工厂类
+ * Request data loader factory
  *
  * @author zhaoguhong
  * @date 2021/11/22

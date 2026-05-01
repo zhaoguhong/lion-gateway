@@ -6,7 +6,7 @@ import com.zhaoguhong.lion.gateway.core.RequestContext;
 import org.springframework.stereotype.Component;
 
 /**
- * 获取请求参数里面 header
+ * Get header from request parameters
  *
  * @author zhaoguhong
  * @date 2021/11/22

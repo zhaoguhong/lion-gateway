@@ -9,7 +9,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 条件配置
+ * Condition configuration
  *
  * @author zhaoguhong
  * @date 2021/11/22
@@ -23,22 +23,22 @@ import lombok.extern.slf4j.Slf4j;
 public class ConditionConfig {
 
   /**
-   * 请求数据类型
+   * Request data type
    */
   private String requestDataType;
 
   /**
-   * 请求数据名称
+   * Request data name
    */
   private String requestDataName;
 
   /**
-   * 操作符
+   * Operator
    */
   private String operator;
 
   /**
-   * 需要比对的目标数据
+   * Target data to compare
    */
   private String targetData;
 
@@ -49,9 +49,9 @@ public class ConditionConfig {
   private RuleConfig rule;
 
   /**
-   * 构造方法，解析配置的数据，配置用竖线分隔，比如 header,aaa|=|bbb
+   * Constructor, parse configuration data separated by vertical lines, e.g. header,aaa|=|bbb
    *
-   * @param condition 配置的数据
+   * @param condition configuration data
    */
   public ConditionConfig(String condition) {
     String[] conditionArray = condition.split("\\|");

@@ -8,7 +8,7 @@ import com.zhaoguhong.lion.gateway.rule.predicate.Predicate;
 import com.zhaoguhong.lion.gateway.rule.predicate.PredicateFactory;
 
 /**
- * 匹配模式的基类
+ * Base class for match modes
  *
  * @author zhaoguhong
  * @date 2021/11/19
@@ -16,11 +16,11 @@ import com.zhaoguhong.lion.gateway.rule.predicate.PredicateFactory;
 public abstract class AbstractMatchMode implements MatchMode {
 
   /**
-   * 单个条件匹配
+   * Single condition match
    *
-   * @param requestContext  请求上下文
-   * @param conditionConfig 条件配置
-   * @return
+   * @param requestContext  request context
+   * @param conditionConfig condition configuration
+   * @return true if match
    */
   protected boolean singleMatch(RequestContext requestContext, ConditionConfig conditionConfig) {
     RequestDataLoader requestDataLoader = RequestDataLoaderFactory

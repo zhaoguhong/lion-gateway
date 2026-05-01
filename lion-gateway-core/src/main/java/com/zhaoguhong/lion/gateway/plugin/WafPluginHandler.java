@@ -15,7 +15,7 @@ public class WafPluginHandler extends AbstractPluginHandler {
 
   @Override
   protected void doHandler(RequestContext requestContext, HandlerChain handlerChain) {
-    System.out.println("执行 waf 插件");
+    System.out.println("Executing waf plugin");
   }
 
   @Override

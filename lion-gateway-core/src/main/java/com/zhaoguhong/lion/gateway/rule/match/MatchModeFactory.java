@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * 匹配工厂类
+ * Match mode factory
  *
  * @author zhaoguhong
  * @date 2021/11/22

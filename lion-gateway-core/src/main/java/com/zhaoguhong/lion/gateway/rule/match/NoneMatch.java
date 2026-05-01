@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 /**
- * 没有一个满足条件
+ * None of the conditions match
  *
  * @author zhaoguhong
  * @date 2021/11/19

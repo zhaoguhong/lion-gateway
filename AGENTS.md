@@ -41,6 +41,7 @@ Client Request → Netty Server → Handler Chain (Plugins) → Response
 6. **Documentation**: Update `/doc/` files for significant changes (in Chinese)
 7. **Testing**: Use JUnit 5 (already configured)
 8. **Sync Changes**: When modifying code, always update corresponding documentation and unit tests
+9. **No Auto-Commit**: Do NOT commit code unless explicitly requested by the user
 
 ## Building & Running
 

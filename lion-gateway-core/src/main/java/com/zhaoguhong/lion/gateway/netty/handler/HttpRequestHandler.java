@@ -13,6 +13,8 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
@@ -31,69 +33,79 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
+  private static final String DEFAULT_ERROR_MESSAGE = "Internal Server Error";
+  private static final String DEFAULT_RESPONSE = "response success";
+  private static final int MAX_CONTENT_LENGTH = 1024 * 1024;
+
   static {
     DiskFileUpload.deleteOnExitTemporaryFile = false;
     DiskAttribute.deleteOnExitTemporaryFile = false;
   }
 
-  private HandlerChain handlerChain = LionContext.getBean(HandlerChain.class);
+  private final HandlerChain handlerChain;
+
+  public HttpRequestHandler(HandlerChain handlerChain) {
+    this.handlerChain = handlerChain;
+  }
 
   @Override
   protected void channelRead0(ChannelHandlerContext channelHandlerContext,
       FullHttpRequest request) throws Exception {
 
     log.info("request:{}", request);
-    ByteBuf responseBuf = Unpooled.copiedBuffer("response success", CharsetUtil.UTF_8);
-    FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1,
-        HttpResponseStatus.OK, responseBuf);
-    if (request.method() == HttpMethod.GET) {
-      log.info("method GET,params:{}", getUriParams(request));
-    } else if (request.method() == HttpMethod.POST) {
-      if (NettyUtil.isHttpJsonRequest(request)) {
-        String jsonParams = NettyUtil.getJsonParams(request);
-        log.info("method POST,json params:{}", jsonParams);
-      } else {
-        Map<String, Object> postParams = NettyUtil.getPostParamsFromChannel(request);
-        log.info("method POST,params:{}", postParams);
+
+    try {
+      QueryStringDecoder decoder = new QueryStringDecoder(request.uri());
+      Map<String, String> queryParams = Maps.newHashMap();
+      for (Map.Entry<String, List<String>> entry : decoder.parameters().entrySet()) {
+        queryParams.put(entry.getKey(), entry.getValue().get(0));
       }
-    } else {
-      response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1,
-          HttpResponseStatus.INTERNAL_SERVER_ERROR);
-      ChannelFuture f = channelHandlerContext.channel().writeAndFlush(response);
-      return;
+
+      if (request.method() == HttpMethod.GET) {
+        log.info("method GET,params:{}", queryParams);
+      } else if (request.method() == HttpMethod.POST) {
+        if (NettyUtil.isHttpJsonRequest(request)) {
+          String jsonParams = NettyUtil.getJsonParams(request);
+          log.info("method POST,json params:{}", jsonParams);
+        } else {
+          Map<String, Object> postParams = NettyUtil.getPostParamsFromChannel(request);
+          log.info("method POST,params:{}", postParams);
+        }
+      } else {
+        writeErrorResponse(channelHandlerContext, HttpResponseStatus.METHOD_NOT_ALLOWED);
+        return;
+      }
+
+      RequestContext requestContext = RequestContext.builder()
+          .httpHeaders(request.headers())
+          .path(decoder.path())
+          .method(request.method().name())
+          .queryParams(queryParams)
+          .build();
+      handlerChain.handler(requestContext);
+
+      writeResponse(channelHandlerContext, requestContext.getResponse().toString());
+    } catch (Exception e) {
+      log.error("Error handling request", e);
+      writeErrorResponse(channelHandlerContext, HttpResponseStatus.INTERNAL_SERVER_ERROR);
     }
-
-    QueryStringDecoder decoder = new QueryStringDecoder(request.uri());
-    Map<String, String> queryParams = Maps.newHashMap();
-    for (Map.Entry<String, List<String>> entry : decoder.parameters().entrySet()) {
-      queryParams.put(entry.getKey(), entry.getValue().get(0));
-    }
-
-    RequestContext requestContext = RequestContext.builder()
-        .httpHeaders(request.headers())
-        .path(decoder.path())
-        .method(request.method().name())
-        .queryParams(queryParams)
-        .build();
-    handlerChain.handler(requestContext);
-
-    responseBuf = Unpooled.copiedBuffer(requestContext.getResponse().toString(), CharsetUtil.UTF_8);
-    response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK,
-        responseBuf);
-    ChannelFuture f = channelHandlerContext.channel().writeAndFlush(response);
   }
 
-  /*
-   * Get URL parameters
-   */
-  private Map<String, Object> getUriParams(FullHttpRequest request) {
-    Map<String, Object> params = Maps.newHashMap();
-    if (request.method() == HttpMethod.GET) {
-      QueryStringDecoder decoder = new QueryStringDecoder(request.uri());
-      for (Map.Entry<String, List<String>> entry : decoder.parameters().entrySet()) {
-        params.put(entry.getKey(), entry.getValue().get(0));
-      }
-    }
-    return params;
+  private void writeResponse(ChannelHandlerContext ctx, String content) {
+    ByteBuf responseBuf = Unpooled.copiedBuffer(content, CharsetUtil.UTF_8);
+    FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1,
+        HttpResponseStatus.OK, responseBuf);
+    response.headers().set(HttpHeaderNames.CONTENT_TYPE,
+        HttpHeaderValues.TEXT_PLAIN + "; charset=UTF-8");
+    ctx.channel().writeAndFlush(response);
+  }
+
+  private void writeErrorResponse(ChannelHandlerContext ctx, HttpResponseStatus status) {
+    ByteBuf responseBuf = Unpooled.copiedBuffer(DEFAULT_ERROR_MESSAGE, CharsetUtil.UTF_8);
+    FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1,
+        status, responseBuf);
+    response.headers().set(HttpHeaderNames.CONTENT_TYPE,
+        HttpHeaderValues.TEXT_PLAIN + "; charset=UTF-8");
+    ctx.channel().writeAndFlush(response);
   }
 }

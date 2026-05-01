@@ -8,14 +8,31 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
 /**
  * @author zhaoguhong
  * @date 2021/11/19
  */
-public class NettyServer {
+@Component
+public class NettyServer implements CommandLineRunner {
 
   private static final Logger log = LoggerFactory.getLogger(NettyServer.class);
+  private static final int PORT = 9999;
+
+  private final LionGatewayChannelInitializer channelInitializer;
+
+  @Autowired
+  public NettyServer(LionGatewayChannelInitializer channelInitializer) {
+    this.channelInitializer = channelInitializer;
+  }
+
+  @Override
+  public void run(String... args) {
+    start();
+  }
 
   public void start() {
     int availableProcessors = Runtime.getRuntime().availableProcessors();
@@ -27,11 +44,11 @@ public class NettyServer {
     ServerBootstrap bootstrap = new ServerBootstrap();
     bootstrap.group(bossGroup, workerGroup)
         .channel(NioServerSocketChannel.class)
-        .childHandler(new LionGatewayChannelInitializer());
+        .childHandler(channelInitializer);
 
     try {
-      Channel channel = bootstrap.bind(9999).sync().channel();
-      log.info("Lion Gateway started on port 9999 with JDK 21 Virtual Threads support");
+      Channel channel = bootstrap.bind(PORT).sync().channel();
+      log.info("Lion Gateway started on port {} with JDK 21 Virtual Threads support", PORT);
       channel.closeFuture().sync();
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();

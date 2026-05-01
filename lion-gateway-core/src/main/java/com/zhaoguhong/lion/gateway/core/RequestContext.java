@@ -1,6 +1,7 @@
 package com.zhaoguhong.lion.gateway.core;
 
 import io.netty.handler.codec.http.HttpHeaders;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,11 +22,24 @@ import org.springframework.context.annotation.Configuration;
 public class RequestContext {
 
   /**
-   * header 参数
+   * HTTP headers
    */
   private HttpHeaders httpHeaders;
 
-  private String uri;
+  /**
+   * Request path
+   */
+  private String path;
+
+  /**
+   * HTTP method
+   */
+  private String method;
+
+  /**
+   * Query parameters
+   */
+  private Map<String, String> queryParams;
 
   private Object response;
 

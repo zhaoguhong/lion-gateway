@@ -14,9 +14,24 @@ import java.util.stream.Collectors;
 public enum RequestDataEnum {
 
   /**
-   * 请求头
+   * HTTP header
    */
-  HEADER("header");
+  HEADER("header"),
+
+  /**
+   * Request path
+   */
+  PATH("path"),
+
+  /**
+   * HTTP method
+   */
+  METHOD("method"),
+
+  /**
+   * Request parameter
+   */
+  PARAM("param");
 
   RequestDataEnum(String type) {
     this.type = type;

@@ -63,7 +63,18 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
       return;
     }
 
-    RequestContext requestContext = RequestContext.builder().httpHeaders(request.headers()).build();
+    QueryStringDecoder decoder = new QueryStringDecoder(request.uri());
+    Map<String, String> queryParams = Maps.newHashMap();
+    for (Map.Entry<String, List<String>> entry : decoder.parameters().entrySet()) {
+      queryParams.put(entry.getKey(), entry.getValue().get(0));
+    }
+
+    RequestContext requestContext = RequestContext.builder()
+        .httpHeaders(request.headers())
+        .path(decoder.path())
+        .method(request.method().name())
+        .queryParams(queryParams)
+        .build();
     handlerChain.handler(requestContext);
 
     responseBuf = Unpooled.copiedBuffer(requestContext.getResponse().toString(), CharsetUtil.UTF_8);
